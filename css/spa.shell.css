@@ -1,67 +1,89 @@
-	<script type="text/javascript">
-		
-		/* global jQuery */
-		// Module /spa/
-		// Provide chat slider capability
-		var spa = (function($){
-			//Module scope variable
-			var
-			//Set constants
-			configMap = {
-				extended_height: 434,
-				extended_title: 'Click to retract',
-				retracted_height: 16,
-				retracted_title: 'Click to extend',
-				template_html: '<div class="spa-slider"><\/div>'
-			},
-			//Declare all other module scope variable
-			$chatSlider,
-			toggleSlider, onClickSlider, initModule;
-			//DOM method /toggleSlider/
-			//alternates slider height
-			toggleSlider = function(){
-				var slider_height = $chatSlider.height();
-				//extend slider if fully retracted
-				if(slider_height === configMap.retracted_height){
-					$chatSlider
-					.animate({height: configMap.extended_height})
-					.attr('title', configMap.extended_title);
-					return true;
-				}
-				//retract slider if fully extended
-				else if(slider_height == configMap.extended_height){
-					$chatSlider
-					.animate({height: configMap.retracted_height})
-					.attr('title', configMap.retracted_title);
-					return true;
-				}
-				//don no take action if slider is in transition
-				return false;
-			};
-			//Event handler /onClickSlider/
-			//receives click event and calls toggleSlider
-			onClickSlider = function(event){
-				toggleSlider();
-				return false;
-			};
-			//Public methos /initModule/
-			//sets initial state and provides feature
-			initModule = function($container){
-				//reder HTML
-				$container.html(configMap.template_html);
-				$chatSlider = $container.find('.spa-slider');
-			 	//initialize slider event and title
-				//bind the user click envet to the event handler
-				$chatSlider
-				.attr('title', configMap.retracted_title)
-				.click(onClickSlider);
-			};
-			return {initModule: initModule};
-		}(jQuery));
-		//Start spa once DOM is ready
-		jQuery(document).ready(
-			function(){spa.initModule(jQuery('#spa'));}
-			);
-
-
-	</script>
+/*
+ * spa.shell.css
+ *Shell styles
+*/
+.spa-shell-head, .spa-shell-head-logo, .spa-shell-head-acct,
+.spa-shell-head-search, .spa-shell-main, .spa-shell-main-nav,
+.spa-shell-main-content, .spa-shell-foot, .spa-shell-chat,
+.spa-shell-modal{
+	position:absolute;
+}
+.spa-shell-head{
+	top:0;
+	left:0;
+	right:0;
+	height:40px;
+}
+.spa-shell-head-logo{
+	top:4px;
+	left: 4px;
+	height: 32px;
+	width: 128px;
+	background:orange;
+}
+.spa-shell-head-acct{
+	top:4px;
+	right: 0;
+	width:64px;
+	height: 32px;
+	background: green;
+}
+.spa-shell-head-search{
+	top:4px;
+	right: 64px;
+	width:248px;
+	height: 32px;
+	background: blue;
+}
+.spa-shell-main{
+	top:40px;
+	left: 0;
+	bottom:4px;
+	right: 0;
+}
+.spa-shell-main-content,
+.spa-shell-main-nav{
+	top:0;
+	bottom:0;
+}
+.spa-shell-main-nav{
+	width: 250px;
+	background: #eee;
+}
+.spa-x-closed .spa-shell-main-nav{
+	width:0;
+}
+.spa-shell-main-content{
+	left:250px;
+	right:0;
+	background: #ddd;
+}
+.spa-x-closed .spa-shell-main-content{
+	left:0;
+}
+.spa-shell-foot{
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 40px;
+	background:#888;
+}
+.spa-shell-chat{
+	bottom:0;
+	right: 0;
+	width:300px;
+	height:15px;
+	background: red;
+	z-index: 1;
+}
+.spa-shell-modal{
+	margin-top:-200px;
+	margin-left:-200px;
+	top:50%;
+	left:50%;
+	width: 400px;
+	height: 400px;
+	background: #fff;
+	border-radius: 3px;
+	z-index: 2;	
+}
