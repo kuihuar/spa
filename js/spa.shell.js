@@ -237,6 +237,22 @@ spa.shell = (function(){
 	//---------------------END EVENT HANDLERS----------------------------------
 
 	//---------------------BEGIN PUBLIC METHODS--------------------------------
+	//---------------------BEGIN CALLBACKS--------------------------------------------
+	// Begin callback method /setChatAnchor/
+	// Example: setChatAnchor('closed');
+	// Purpose: Change the chat comonent of the anchor
+	// Arguments:
+	//  *  position_type - may be 'closed' or 'opened'
+	// Action:
+	//  Changes the URI anchor parameter 'chat' to the requested value if posible
+	// Returns:
+	//  * true - requested anchor part was updated
+	//  * false - requested anchor part was not updated
+	// Throws: none
+	//
+	
+	// End callback method /setChatAnchor/
+	//----------------------END CALLBACKS---------------------------------------------
 	// Begin Public method /initModule/
 	initModule = function($container){
 		// load HTML and map jquery collections
@@ -252,6 +268,11 @@ spa.shell = (function(){
 		$.uriAnchor.configModule({
 			schema_map: configMap.anchor_schema_map
 		});
+
+		// configure and initialize feature modules
+		spa.chat.configModule({});
+		spa.chat.initModule(jqueryMap.$chat);
+
 		// Handle URI anchor change events
 		// This is done /after/ all feature modules are configured
 		// and initialized, otherwise they will not be ready to handle
@@ -262,8 +283,9 @@ spa.shell = (function(){
 		.bind('hashchange', onHashchange)
 		.trigger('hashchange');
 	};
-	// test toggle
 	// End Public method /initModule/
-	return {initModule:initModule};
+	return {
+		initModule:initModule
+	};
 	//---------------------END PUBLIC METHODS--------------------------------------
 }());

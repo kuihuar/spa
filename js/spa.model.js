@@ -11,4 +11,4 @@
 */
 /* global $, spa */
 
-spa.model = (function(){}());
+spa.model = (function(){ return {}; }());
