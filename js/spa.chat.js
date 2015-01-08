@@ -39,6 +39,12 @@ spa.chat = (function(){
 	};
 	// End DOM method /setJqueryMap/
 
+	// Begin Public DOM method /setSliderPosition/
+	
+	// End Public DOM method /setSliderPostion/
+
+	//------------------------END DOM METHODS----------------------------------
+
 	//---------------------BEGIN EVENT HANDLERS--------------------------------- 
 	//----------------------END EVENT HANDLERS---------------------------------- 
 	//-------------------------BEGIN PUBLIC METHODS-----------------------------
@@ -74,10 +80,18 @@ spa.chat = (function(){
 	// End public method /configModule/
 
 	// Begin public method /initModule/
-	// Purpose: Initializes module
+	// Example: spa.chat.initModule($(#div_id))
+	// Purpose: 
+	//  Directs Chat to offer its capability to the user
 	// Arguments:
-	//	* $container -the jquery element used by this feature
-	// Returns: true
+	//	* $append_target (example: $('#div_id'))
+	//    A jQuery collection that should represent
+	//    a single DOM container
+	// Action:
+	//    Appends the chat slider to the provided container and fills
+	//    it with HTML content. It then initializes elements, event,
+	//    and hanlers to provied the user with a chat-room interface
+	// Returns: true on success, false on failure
 	// Rhrows: none
 	//
 	initModule = function($container){
