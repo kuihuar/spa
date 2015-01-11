@@ -168,6 +168,7 @@ spa.chat = (function(){
 				}
 			}
 		});
+		return true;
 	};
 	// End Public DOM method /setSliderPosition/
 
