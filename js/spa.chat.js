@@ -20,7 +20,7 @@ spa.chat = (function(){
 		  +'<div class="spa-chat-head">'
 		    +'<div class="spa-chat-head-toggle">+</div>'
 		    +'<div class="spa-chat-head-title">'
-		      +'chat'
+		      +'Chat'
 		    +'</div>'
 		  +'</div>'
 		  +'<div class="spa-chat-closer">x</div>'
@@ -33,45 +33,50 @@ spa.chat = (function(){
 		  +'</div>'
 		+'</div>',
 		settable_map:{//chat 的所有设置
-			slider_open_time:true,
-			slider_close_time:true,
-			slider_opened_em:true,
-			slider_closed_em:true,
-			slider_opened_title:true,
-			slider_closed_title:true,
+			slider_open_time: true,
+			slider_close_time: true,
+			slider_opened_em: true,
+			slider_closed_em: true,
+			slider_opened_title: true,
+			slider_closed_title: true,
 
-			chat_model:true,
-			poeple_model:true,
-			set_chat_anchor:true,
+			chat_model: true,
+			people_model: true,
+			set_chat_anchor: true
 		},
-		slider_open_time:250,
-		slider_close_time:250,
-		slider_ipened_em:16,
-		slider_closed_em:2,
-		slider_opened_title:'Click to close',
-		slider_closed_title:'Click to open'
+		slider_open_time: 250,
+		slider_close_time: 250,
+		slider_ipened_em: 16,
+		slider_closed_em: 2,
+		slider_opened_title: 'Click to close',
+		slider_closed_title: 'Click to open',
+
+		chat_model: null,
+		people_model: null,
+		setChat_anchor: null
 	},
 
 	stateMap = {
-		$append_target:null,
-		position_type:'closed',
-		px_per_em:0,
-		slider_hidden_px:0,
-		slider_closed_px:0,
-		slider_opened_px:0
+		$append_target: null,
+		position_type: 'closed',
+		px_per_em: 0,
+		slider_hidden_px: 0,
+		slider_closed_px: 0,
+		slider_opened_px: 0
 
 	},
 	jqueryMap = {},
 	setJqueryMap, getEmSize, setPxSizes, setSliderPosition,
-	onClickToggle, configModule, initModule
+	onClickToggle, configModule, initModule,
+	removeSlider, handleResize
 	;
 
 	//---------------------END MODULE SCOPE VARIABLES--------------------------
 
 	//-----------------------BEGIN UTILITY METHODS-----------------------------
-	getEmSize(elem){
+	getEmSize = function (elem){
 		return Number(
-			getComputedStyle(elem, '').fontSize.match(/\d*\.?\d*/)[0];
+			getComputedStyle(elem, '').fontSize.match(/\d*\.?\d*/)[0]
 		);
 	};
 	//------------------------END UTILITY METHODS------------------------------
@@ -80,17 +85,17 @@ spa.chat = (function(){
 	// Begin DOM method /setJqueryMap/
 	setJqueryMap = function(){
 		var
-		$append_target = stateMap.$append_target,
-		$slider=$append_target.find('.spa-chat');
+		$append_target = stateMap.$append_target;
+		$slider = $append_target.find('.spa-chat');
 		jqueryMap={
 			$slider:$slider,
-			$head:$slider.find('.spa-chat-head');
-			$toggle:$slider.find('.spa-chat-toggle');
-			$title:$slider.find('.spa-chat-title');
-			$sizer:$slider.find('spa-chat-sizer');
-			$msgs:$slider.find('spa-chat-msgs');
-			$box:$slider.find('.spa-chat-box');
-			$input:$slider.find('.sap-chat-input input[type=text]');
+			$head:$slider.find('.spa-chat-head'),
+			$toggle:$slider.find('.spa-chat-toggle'),
+			$title:$slider.find('.spa-chat-title'),
+			$sizer:$slider.find('spa-chat-sizer'),
+			$msgs:$slider.find('spa-chat-msgs'),
+			$box:$slider.find('.spa-chat-box'),
+			$input:$slider.find('.sap-chat-input input[type=text]')
 		};
 	};
 	// End DOM method /setJqueryMap/
@@ -156,7 +161,7 @@ spa.chat = (function(){
 		}
 		//animate slider position change
 		stateMap.$slider_type = '';
-		jqueryMap.$slider.animate({
+		jqueryMap.$slider.animate(
 			{height: height_px},
 			animate_time,
 			function(){
@@ -167,7 +172,7 @@ spa.chat = (function(){
 					callback(jqueryMap.$slider);
 				}
 			}
-		});
+		);
 		return true;
 	};
 	// End Public DOM method /setSliderPosition/
@@ -175,6 +180,15 @@ spa.chat = (function(){
 	//------------------------END DOM METHODS----------------------------------
 
 	//---------------------BEGIN EVENT HANDLERS--------------------------------- 
+	onclickToggle = function(){
+		var set_chat_anchor = configMap.set_chat_anchor;
+		if(stateMap.position_type === 'opened'){
+			set_chat_anchor('closed');
+		}
+		else if(stateMap.postion_type === 'closed'){
+			set_chat_anchor('opened');
+		} return false;
+	}
 	//----------------------END EVENT HANDLERS---------------------------------- 
 	//-------------------------BEGIN PUBLIC METHODS-----------------------------
 	// Begin public method /configModule/
@@ -223,18 +237,47 @@ spa.chat = (function(){
 	// Returns: true on success, false on failure
 	// Rhrows: none
 	//
-	initModule = function($container){
-		$container.html(configMap.main_html);
-		stateMap.$container = $container;
+	initModule = function($append_target){
+		$append_target.append(configMap.main_html);
+		stateMap.$append_target = $append_target;
 		setJqueryMap();
+		setPxSizes();
 		return true;
 	};
 	// End public method /initModule/
+	// Begin public method /removeSlider/
+	// Purpose:
+	//	* Removes chatSlider DOM element
+	//	* reverts to initial state
+	//	* Removes pointers to callbacks and other data
+	// Arguments: none
+	// Returns :none
+	// Throws none
+	//
+	removeSlider = function(){
+		// unwind initialization and state
+		// remove DOM container; this removes event binding too
+		if(jqueryMap.$slider){
+			jqueryMap.$slider.remove();
+			jqueryMap  = {};
+		}
+		stateMap.$append_target = null;
+		stateMap.position_type = 'closed';
 
+		//unwind key configurations
+		configMap.chat_model = null;
+		configMap.people_model = null;
+		configMap.set_chat_anchor = null;
+		return true;
+	};
+	// End public method /removeSlider/
 	// return public mothods
 	return{
+		setSliderPostiion:setSliderPosition,
 		configModule: configModule,
-		initModule: initModule
+		initModule: initModule,
+		removeSlider: removeSlider,
+		handleResize: handleResize
 	};
 
 	//--------------------------END PUBLIC METHODS------------------------------

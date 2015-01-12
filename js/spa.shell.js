@@ -14,7 +14,7 @@ spa.shell = (function(){
 	//-----------------------BEGIN MODULE SCOPE VARIABLES--------------------------
 	var configMap = {
 		anchor_schema_map: {
-			chat: { open: true, closed: true}
+			chat: { opened: true, closed: true}
 		},
 		main_html: String() 
 		+ '<div class="spa-shell-head">'
@@ -27,24 +27,24 @@ spa.shell = (function(){
 		+	'<div class="spa-shell-main-content"></div>'
 		+ '</div>'
 		+ '<div class="spa-shell-foot"></div>'
-		+ '<div class="spa-shell-chat"></div>'
-		+ '<div class="spa-shell-modal"></div>',
-		chat_extend_time: 1000,
-		chat_retract_time: 300,
-		chat_extend_height: 450,
-		chat_retract_height: 15,
-		chat_extend_title: 'Click to retract',
-		chat_retract_title: 'Click to extend'
+		+ '<div class="spa-shell-chat"></div>',
+//		+ '<div class="spa-shell-modal"></div>'  移除
+//		chat_extend_time: 1000,
+//		chat_retract_time: 300,
+//		chat_extend_height: 450,
+//		chat_retract_height: 15,
+//		chat_extend_title: 'Click to retract',
+//		chat_retract_title: 'Click to extend'
 	},
 	stateMap = { 
-		$container: null,
+//		$container: null,
 		anchor_map: {},
-		is_chat_retracted: true
+//		is_chat_retracted: true
 	},
 	jqueryMap = {},
-	copyAnchorMap, setJqueryMap, toggleChat, 
+	copyAnchorMap, setJqueryMap, //toggleChat, 
 	changeAnchorPart, onHashchange,
-	onClickChat, initModule;
+	setChatAnchor, initModule;
 	//--------------------END MODULE SCOPE VARIABLES--------------------------
 	//--------------------BEGIN UTILITY METHODS-------------------------------
 	// Returns copy of stored anchor map; minimizes overhead
@@ -58,7 +58,7 @@ spa.shell = (function(){
 		var $container = stateMap.$container;
 		jqueryMap = {
 			$container: $container,
-			$chat: $container.find('.spa-shell-chat')
+			//$chat: $container.find('.spa-shell-chat')
 		};
 	};
 	// End DOM method  /setJqueryMap/
@@ -75,7 +75,7 @@ spa.shell = (function(){
 	//   * true - slider animation activated
 	//   * false - slider animation no activated
 
-	toggleChat = function(do_extend, callback){
+/*	toggleChat = function(do_extend, callback){  //移除方法
 		var
 		px_chat_ht = jqueryMap.$chat.height(),
 		is_open = px_chat_ht === configMap.chat_extend_height,
@@ -115,7 +115,7 @@ spa.shell = (function(){
 		return true;
 		//End retract chat slider
 	};
-	
+	*/
 	// End DOM method / toggleChat /
 
 	// Begin DOM method /changeAnchorPart/
@@ -187,13 +187,14 @@ spa.shell = (function(){
 	// Action:
 	//	* parses the URI anchor component
 	//	* comparses proposed application state with current
-	//	* adjust the application only where proposed state differs from existing
+	//	* adjust the application only where proposed state 
+	//  * differs from existing and is allowed by anchor schema
 	onHashchange = function(){
 		var
-		anchor_map_previous = copyAnchorMap(),
+		_s_char_previous, _s_chat_proposed, s_chat_proposed,
 		anchor_map_proposed,
-		_s_chat_previous, _s_chat_proposed,
-		s_chat_proposed;
+		is_ok = true;
+		anchor_map_previous = copyAnchorMap();
 
 		// attempt to parse anchor
 		try{
@@ -211,19 +212,31 @@ spa.shell = (function(){
 		if( !anchor_map_previous || _s_chat_previous !== _s_chat_proposed){
 			s_chat_proposed = anchor_map_proposed.chat;
 			switch(s_chat_proposed){
-				case 'open':
-				toggleChat(true);
+				case 'opened':
+				    is_ok = spa.chat.setSliderPosition('opened');
 				break;
 				case 'closed':
-				toggleChat(false);
+				    is_ok = spa.chat.setSliderPosition('closed');
 				break;
 				default:
-				toggleChat(false);
-				delete anchor_map_proposed.chat;
-				$.uriAnchor.setAnchor(anchor_map_previous, null, true);
+				    spa.chat.setSliderPosition('closed');
+				    delete anchor_map_proposed.chat;
+				    $.uriAnchor.setAnchor(anchor_map_previous, null, true);
 			}
 		}
 		//End adjust chat component if changed
+
+		// Begin revert chat component if changed
+		if(!is_ok){
+			if(anchor_map_previous){
+				$.uriAnchor.setAnchor(anchor_map_previous, null, true);
+				stateMap.anchor_map = anchor_map_previous;
+			}else{
+				delete anchor_map_proposed.chat;
+				$.uriAcchor.setAnchor(anchor_map_proposed, null, true);
+			}
+		}
+		// End revert chat component if changed
 		return false;
 		// convenience vars
 	};
@@ -250,28 +263,49 @@ spa.shell = (function(){
 	//  * false - requested anchor part was not updated
 	// Throws: none
 	//
-	
+	setChatAnchor = function(position_type){
+		return changeAnchorPart({chat: position_type})
+	}
 	// End callback method /setChatAnchor/
 	//----------------------END CALLBACKS---------------------------------------------
 	// Begin Public method /initModule/
+	// Example: spa.shell.initModule($('#app_div_id'));
+	// Purpose:
+	// Directs the shell to offer its capability to the user
+	// Arguments:
+	//    * $container(example: $('#app_div_id'))
+	//    * A jQuery collection that should represent
+	//    * a single DOM container
+	// Action:
+	//    Populates $container with the shell of the UI
+	//    and then configures and initializes feature modules.
+	//    The Shell is also responsible for bowser-wide issues
+	//    such as URI anchor and cookie management.
+	// Returns: none
+	// Throws: none
+	//
 	initModule = function($container){
 		// load HTML and map jquery collections
 		stateMap.$container = $container;
 		$container.html(configMap.main_html);
 		setJqueryMap();
 		// initialize chat slider and bind click handler
-		stateMap.is_chat_retracted = true;
+/*		stateMap.is_chat_retracted = true;    移除了，
 		jqueryMap.$chat
 		.attr('title', configMap.chat_retract_title)
-		.click(onClickChat);
+		.click(onClickChat);*/
 		// configure uriAnchor to use our schema
 		$.uriAnchor.configModule({
 			schema_map: configMap.anchor_schema_map
 		});
 
 		// configure and initialize feature modules
-		spa.chat.configModule({});
-		spa.chat.initModule(jqueryMap.$chat);
+		spa.chat.configModule({
+			set_chat_anchor: setChatAnchor,
+			chat_model: spa.model.chat,
+			people_model: spa.model.people
+		});
+		spa.chat.initModule(jqueryMap.$container);
 
 		// Handle URI anchor change events
 		// This is done /after/ all feature modules are configured
