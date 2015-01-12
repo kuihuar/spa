@@ -27,23 +27,25 @@ spa.shell = (function(){
 		+	'<div class="spa-shell-main-content"></div>'
 		+ '</div>'
 		+ '<div class="spa-shell-foot"></div>'
-		+ '<div class="spa-shell-chat"></div>',
-//		+ '<div class="spa-shell-modal"></div>'  移除
-//		chat_extend_time: 1000,
-//		chat_retract_time: 300,
-//		chat_extend_height: 450,
-//		chat_retract_height: 15,
-//		chat_extend_title: 'Click to retract',
-//		chat_retract_title: 'Click to extend'
+//		+ '<div class="spa-shell-chat"></div>',
+		+ '<div class="spa-shell-modal"></div>' ,
+		resize_interval: 200
+		/*chat_extend_time: 1000, //移除
+		chat_retract_time: 300,
+		chat_extend_height: 450,
+		chat_retract_height: 15,
+		chat_extend_title: 'Click to retract',
+		chat_retract_title: 'Click to extend'*/
 	},
 	stateMap = { 
-//		$container: null,
+		$container: undefined,
 		anchor_map: {},
+		resize_idto: undefined
 //		is_chat_retracted: true
 	},
 	jqueryMap = {},
 	copyAnchorMap, setJqueryMap, //toggleChat, 
-	changeAnchorPart, onHashchange,
+	changeAnchorPart, onHashchange, onResize,
 	setChatAnchor, initModule;
 	//--------------------END MODULE SCOPE VARIABLES--------------------------
 	//--------------------BEGIN UTILITY METHODS-------------------------------
@@ -205,6 +207,7 @@ spa.shell = (function(){
 			return false;
 		}
 		stateMap.anchor_map = anchor_map_proposed;
+		// convenience vars
 		_s_chat_previous = anchor_map_previous._s_chat;
 		_s_chat_proposed = anchor_map_proposed._s_chat;
 
@@ -242,11 +245,26 @@ spa.shell = (function(){
 	};
 	// End Event handler /onHashchange/
 	// Begin Event handler /onClickChat/
-	onClickChat = function(){
+	/*onClickChat = function(){
 		toggleChat(stateMap.is_chat_retracted);
 		return false;
-	};
+	};*/
 	// End Event handler /onClickChat/
+
+	// Begin Event handler /onResize/
+	onResize = function(){
+		if(stateMap.resize_idto){
+			return true;
+		}
+		spa.chat.handleResize();
+		stateMap.resize.idto = setTimeout(
+			function(){ stateMap.resize_idto = undefined; },
+			configMap.resize_interval
+		);
+		return true;
+	};
+
+	//End Event handler /onResize/
 	//---------------------END EVENT HANDLERS----------------------------------
 
 	//---------------------BEGIN PUBLIC METHODS--------------------------------
@@ -265,7 +283,7 @@ spa.shell = (function(){
 	//
 	setChatAnchor = function(position_type){
 		return changeAnchorPart({chat: position_type})
-	}
+	};
 	// End callback method /setChatAnchor/
 	//----------------------END CALLBACKS---------------------------------------------
 	// Begin Public method /initModule/
@@ -314,6 +332,7 @@ spa.shell = (function(){
 		// is considered on-load
 		//
 		$(window)
+		.bind('resize', onResize)
 		.bind('hashchange', onHashchange)
 		.trigger('hashchange');
 	};

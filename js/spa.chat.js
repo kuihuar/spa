@@ -10,7 +10,7 @@
   white: true
 */
 
-/* global $, spa */
+/* global $, spa getComputedStyle*/
 spa.chat = (function(){
 	//----------------------BEGIN MODULE SCOPE VARIABLES-------------------------------
 	var
@@ -32,6 +32,7 @@ spa.chat = (function(){
 		    +'</div>'
 		  +'</div>'
 		+'</div>',
+
 		settable_map:{//chat 的所有设置
 			slider_open_time: true,
 			slider_close_time: true,
@@ -44,10 +45,13 @@ spa.chat = (function(){
 			people_model: true,
 			set_chat_anchor: true
 		},
+
 		slider_open_time: 250,
 		slider_close_time: 250,
-		slider_ipened_em: 16,
+		slider_opened_em: 18,
 		slider_closed_em: 2,
+		slider_opened_min_em: 10,
+		widown_height_min_em:20,
 		slider_opened_title: 'Click to close',
 		slider_closed_title: 'Click to open',
 
@@ -85,24 +89,32 @@ spa.chat = (function(){
 	// Begin DOM method /setJqueryMap/
 	setJqueryMap = function(){
 		var
-		$append_target = stateMap.$append_target;
-		$slider = $append_target.find('.spa-chat');
+		$append_target = stateMap.$append_target,
+		$slider = $append_target.find('.spa-chat');//这儿的分号不能变成逗号
 		jqueryMap={
-			$slider:$slider,
-			$head:$slider.find('.spa-chat-head'),
-			$toggle:$slider.find('.spa-chat-toggle'),
-			$title:$slider.find('.spa-chat-title'),
-			$sizer:$slider.find('spa-chat-sizer'),
-			$msgs:$slider.find('spa-chat-msgs'),
-			$box:$slider.find('.spa-chat-box'),
-			$input:$slider.find('.sap-chat-input input[type=text]')
+			$slider: $slider,
+			$head: $slider.find('.spa-chat-head'),
+			$toggle: $slider.find('.spa-chat-head-toggle'),
+			$title: $slider.find('.spa-chat-head-title'),
+			$sizer: $slider.find('.spa-chat-sizer'),
+			$msgs: $slider.find('.spa-chat-msgs'),
+			$box: $slider.find('.spa-chat-box'),
+			$input: $slider.find('.sap-chat-input input[type=text]')
 		};
 	};
 	// End DOM method /setJqueryMap/
 	// Begin DOM method /setPxSizes/
 	setPxSizes = function(){
-		var px_er_em, opened_height_em;
+		var px_per_em, window_height_em, opened_height_em;
+		//console.log(jqueryMap.$slider);
 		px_per_em = getEmSize(jqueryMap.$slider.get(0));
+		window_height_em = Math.floor(
+			($(window).height() / px_per_em) + 0.5
+		);
+		opened_height_em
+		= window_height_em > configMap.window_height_min_em
+		? configMap.slider_opened_em
+		: configMap.slider_opened_min_em
 		opened_height_em = configMap.slider_opened_em;
 		stateMap.px_per_em = px_per_em;
 		stateMap.slier_closed_px = configMap.slider_closed_em * px_per_em;
@@ -165,8 +177,8 @@ spa.chat = (function(){
 			{height: height_px},
 			animate_time,
 			function(){
-				jqueryMap.$toogle.prop('title', slider_title);
-				jqueryMap.$goggle.text(toggle_text);
+				jqueryMap.$toggle.prop('title', slider_title);
+				jqueryMap.$toggle.text(toggle_text);
 				stateMap.position_type = position_type;
 				if(callback){
 					callback(jqueryMap.$slider);
@@ -242,6 +254,10 @@ spa.chat = (function(){
 		stateMap.$append_target = $append_target;
 		setJqueryMap();
 		setPxSizes();
+		//initialize chat slider to default title and state
+		jqueryMap.$toggle.prop('title', configMap.slider_closed_title);
+		jqueryMap.$head.click(onClickToggle);
+		stateMap.position_type = 'closed';
 		return true;
 	};
 	// End public method /initModule/
@@ -271,6 +287,32 @@ spa.chat = (function(){
 		return true;
 	};
 	// End public method /removeSlider/
+	// Begin public method /handleResize/
+	// Purpose:
+	// Given a window resize event, adjust the presentation
+	// provided by this module if needed
+	// Acitons:
+	// If the window height or width falls below
+	// a given threshold, resizes the chat slider for the
+	// reduced window size
+	// Returns: Boolean
+	// 	* false - resize no considered
+	//  * true - resize considered
+	// Throws: none
+	//
+	handleResize = function(){
+		// don't do anything if we don't have a slider container
+		if(!jqueryMap.$slider){
+			return false;
+		}
+		setPxSizes();
+		if(stateMap.position === 'opened'){
+			jqueryMap.$slider.css({height: stateMap.slider_opened_px});
+		}
+		return true;
+	}
+	// End public method /handleResize/
+
 	// return public mothods
 	return{
 		setSliderPostiion:setSliderPosition,
