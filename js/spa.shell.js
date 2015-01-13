@@ -3,8 +3,8 @@
 * Shell module for spa
 */
 
-/*jslint	bowser:true, continue:true,
-  devel:ture, indent:2, maxxerr:50,
+/*jslint	browser:true, continue:true,
+  devel:true, indent:2, maxerr:50,
   newcap:true, nomen:true, plusplus:true,
   regexp:true, sloppy:true, vars:false,
   white: true
@@ -27,15 +27,8 @@ spa.shell = (function(){
 		+	'<div class="spa-shell-main-content"></div>'
 		+ '</div>'
 		+ '<div class="spa-shell-foot"></div>'
-//		+ '<div class="spa-shell-chat"></div>',
 		+ '<div class="spa-shell-modal"></div>' ,
 		resize_interval: 200
-		/*chat_extend_time: 1000, //移除
-		chat_retract_time: 300,
-		chat_extend_height: 450,
-		chat_retract_height: 15,
-		chat_extend_title: 'Click to retract',
-		chat_retract_title: 'Click to extend'*/
 	},
 	stateMap = { 
 		$container: undefined,
@@ -191,9 +184,9 @@ spa.shell = (function(){
 	//	* comparses proposed application state with current
 	//	* adjust the application only where proposed state 
 	//  * differs from existing and is allowed by anchor schema
-	onHashchange = function(){
+	onHashchange = function(event){
 		var
-		_s_char_previous, _s_chat_proposed, s_chat_proposed,
+		_s_chat_previous, _s_chat_proposed, s_chat_proposed,
 		anchor_map_proposed,
 		is_ok = true;
 		anchor_map_previous = copyAnchorMap();
@@ -224,7 +217,7 @@ spa.shell = (function(){
 				default:
 				    spa.chat.setSliderPosition('closed');
 				    delete anchor_map_proposed.chat;
-				    $.uriAnchor.setAnchor(anchor_map_previous, null, true);
+				    $.uriAnchor.setAnchor(anchor_map_proposed, null, true);
 			}
 		}
 		//End adjust chat component if changed
