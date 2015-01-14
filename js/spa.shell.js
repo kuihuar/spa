@@ -16,6 +16,7 @@ spa.shell = (function(){
 		anchor_schema_map: {
 			chat: { opened: true, closed: true}
 		},
+		resize_interval: 200,
 		main_html: String() 
 		+ '<div class="spa-shell-head">'
 		+ '<div class="spa-shell-head-logo"></div>'
@@ -27,8 +28,7 @@ spa.shell = (function(){
 		+	'<div class="spa-shell-main-content"></div>'
 		+ '</div>'
 		+ '<div class="spa-shell-foot"></div>'
-		+ '<div class="spa-shell-modal"></div>' ,
-		resize_interval: 200
+		+ '<div class="spa-shell-modal"></div>'
 	},
 	stateMap = { 
 		$container: undefined,
@@ -52,7 +52,7 @@ spa.shell = (function(){
 	setJqueryMap = function(){
 		var $container = stateMap.$container;
 		jqueryMap = {
-			$container: $container,
+			$container: $container
 			//$chat: $container.find('.spa-shell-chat')
 		};
 	};
@@ -160,7 +160,7 @@ spa.shell = (function(){
 		// Begin attempt to update URI; revert if no successful
 		try{
 			$.uriAnchor.setAnchor(anchor_map_revise);
-			bool_return = true;
+			//bool_return = true;
 		}
 		catch(error){
 			// replace URI with existing state
@@ -188,7 +188,7 @@ spa.shell = (function(){
 		var
 		_s_chat_previous, _s_chat_proposed, s_chat_proposed,
 		anchor_map_proposed,
-		is_ok = true;
+		is_ok = true,
 		anchor_map_previous = copyAnchorMap();
 
 		// attempt to parse anchor
@@ -205,7 +205,9 @@ spa.shell = (function(){
 		_s_chat_proposed = anchor_map_proposed._s_chat;
 
 		// Begin adjust chat component if changed
-		if( !anchor_map_previous || _s_chat_previous !== _s_chat_proposed){
+		if( ! anchor_map_previous 
+			|| _s_chat_previous !== _s_chat_proposed
+			){
 			s_chat_proposed = anchor_map_proposed.chat;
 			switch(s_chat_proposed){
 				case 'opened':
@@ -229,7 +231,7 @@ spa.shell = (function(){
 				stateMap.anchor_map = anchor_map_previous;
 			}else{
 				delete anchor_map_proposed.chat;
-				$.uriAcchor.setAnchor(anchor_map_proposed, null, true);
+				$.uriAnchor.setAnchor(anchor_map_proposed, null, true);
 			}
 		}
 		// End revert chat component if changed

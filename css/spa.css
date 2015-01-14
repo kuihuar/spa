@@ -18,7 +18,7 @@ ol,ul,dl{list-style-position:inside;}
 body{
 	font: 10pt 'Trebuchet MS', Verdana, Helvetica, Arial, Sans-serif;
 	color:#444;
-	background:#888;
+	background-color:#888;
 }
 a{ text-decoration: none;}
 a:link, a:visited{color:inherit;}
@@ -36,6 +36,7 @@ strong{
 	left:0;
 	bottom:0;
 	right:0;
+	background: #fff;
 	min-height: 15em;
 	min-width:35em;
 	overflow:hidden;
@@ -47,6 +48,6 @@ strong{
 	height: 0 !important;
 	float:none !important;
 	visibility:hidden !important;
-	clear:both !!important;
+	clear:both !important;
 }
 /** End utility selectors */

@@ -46,36 +46,34 @@ spa.chat = (function(){
 			set_chat_anchor: true
 		},
 
-		slider_open_time: 250,
-		slider_close_time: 250,
-		slider_opened_em: 18,
-		slider_closed_em: 2,
-		slider_opened_min_em: 10,
-		widown_height_min_em:20,
-		slider_opened_title: 'Click to close',
-		slider_closed_title: 'Click to open',
+      slider_open_time     : 250,
+      slider_close_time    : 250,
+      slider_opened_em     : 18,
+      slider_closed_em     : 2,
+      slider_opened_title  : 'Click to close',
+      slider_closed_title  : 'Click to open',
+      slider_opened_min_em : 10,
+      window_height_min_em : 20,
 
-		chat_model: null,
-		people_model: null,
-		setChat_anchor: null
-	},
+      chat_model      : null,
+      people_model    : null,
+      set_chat_anchor : null
+    },
+    stateMap  = {
+      $append_target   : null,
+      position_type    : 'closed',
+      px_per_em        : 0,
+      slider_hidden_px : 0,
+      slider_closed_px : 0,
+      slider_opened_px : 0
+    },
+    jqueryMap = {},
 
-	stateMap = {
-		$append_target: null,
-		position_type: 'closed',
-		px_per_em: 0,
-		slider_hidden_px: 0,
-		slider_closed_px: 0,
-		slider_opened_px: 0
-
-	},
-	jqueryMap = {},
-	setJqueryMap, getEmSize, setPxSizes, setSliderPosition,
-	onClickToggle, configModule, initModule,
-	removeSlider, handleResize
-	;
-
-	//---------------------END MODULE SCOPE VARIABLES--------------------------
+    setJqueryMap, getEmSize, setPxSizes, setSliderPosition,
+    onClickToggle, configModule, initModule,
+    removeSlider, handleResize
+    ;
+  //----------------- END MODULE SCOPE VARIABLES ---------------
 
 	//-----------------------BEGIN UTILITY METHODS-----------------------------
 	getEmSize = function (elem){
@@ -99,7 +97,7 @@ spa.chat = (function(){
 			$sizer: $slider.find('.spa-chat-sizer'),
 			$msgs: $slider.find('.spa-chat-msgs'),
 			$box: $slider.find('.spa-chat-box'),
-			$input: $slider.find('.sap-chat-input input[type=text]')
+			$input: $slider.find('.spa-chat-input input[type=text]')
 		};
 	};
 	// End DOM method /setJqueryMap/
@@ -114,15 +112,15 @@ spa.chat = (function(){
 		opened_height_em
 		= window_height_em > configMap.window_height_min_em
 		? configMap.slider_opened_em
-		: configMap.slider_opened_min_em
-		opened_height_em = configMap.slider_opened_em;
+		: configMap.slider_opened_min_em;
+		//opened_height_em = configMap.slider_opened_em;
 		stateMap.px_per_em = px_per_em;
-		stateMap.slier_closed_px = configMap.slider_closed_em * px_per_em;
+		stateMap.slider_closed_px = configMap.slider_closed_em * px_per_em;
 		stateMap.slider_opened_px = opened_height_em * px_per_em;  
 		jqueryMap.$sizer.css({
 			height:(opened_height_em - 2) * px_per_em
 		});
-	}
+	};
 	// End DOM method /setPxSizes/
 	// Begin Public DOM method /setSliderPosition/
 	// Example: spa.chat.setSliderPosition('closed');
@@ -162,9 +160,9 @@ spa.chat = (function(){
 				toggle_text = '+';
 			break;
 			case 'closed':
-				height_px = configMap.slider_closed_px;
+				height_px = stateMap.slider_closed_px;
 				animate_time = configMap.slider_close_time;
-				slider_title = configMap.slider_closed_tiele;
+				slider_title = configMap.slider_closed_title;
 				toggle_text = '+';
 			break;
 			default:
@@ -172,7 +170,7 @@ spa.chat = (function(){
 			return false;
 		}
 		//animate slider position change
-		stateMap.$slider_type = '';
+		stateMap.position_type = '';
 		jqueryMap.$slider.animate(
 			{height: height_px},
 			animate_time,
@@ -192,15 +190,16 @@ spa.chat = (function(){
 	//------------------------END DOM METHODS----------------------------------
 
 	//---------------------BEGIN EVENT HANDLERS--------------------------------- 
-	onclickToggle = function(){
+	onClickToggle = function(event){
 		var set_chat_anchor = configMap.set_chat_anchor;
 		if(stateMap.position_type === 'opened'){
 			set_chat_anchor('closed');
 		}
-		else if(stateMap.postion_type === 'closed'){
+		else if(stateMap.position_type === 'closed'){
 			set_chat_anchor('opened');
-		} return false;
-	}
+		}
+		return false;
+	};
 	//----------------------END EVENT HANDLERS---------------------------------- 
 	//-------------------------BEGIN PUBLIC METHODS-----------------------------
 	// Begin public method /configModule/
@@ -306,16 +305,16 @@ spa.chat = (function(){
 			return false;
 		}
 		setPxSizes();
-		if(stateMap.position === 'opened'){
+		if(stateMap.position_type === 'opened'){
 			jqueryMap.$slider.css({height: stateMap.slider_opened_px});
 		}
 		return true;
-	}
+	};
 	// End public method /handleResize/
 
 	// return public mothods
 	return{
-		setSliderPostiion:setSliderPosition,
+		setSliderPosition:setSliderPosition,
 		configModule: configModule,
 		initModule: initModule,
 		removeSlider: removeSlider,
