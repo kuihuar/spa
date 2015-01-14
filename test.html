@@ -12,6 +12,32 @@ var prison = (function(){
 	};
 })();
 
+
+$('body').append('<div id = "spa-chat-list-box" />');
+var $listbox = $("#spa-chat-list-box");
+$listbox.css({
+	position:'absolute', 'z-index':3,
+	top:50, left:50, width:50, height:50,
+	border:'2px solid black', background:'#fff'
+});
+var onListChange = function(event, update_map){
+	$(this).html(update_map.list_text);
+	alert('OnListChange run');
+};
+
+$.gevent.subscribe(
+	$listbox,			   //$listbox这个集合订阅了事件
+	'spa-listChange',	  //自定义全局事件
+	onListChange          //订阅函数
+);
+
+//调用订阅的事件
+$.gevent.publish(
+	'spa-listChange',
+	[{list_text: 'the list is here'}]
+);
+$listbox.remove();
+$gevent.publish('spa-listChange',[{}]);
 </head>
 <body>
 	<div id="spa">
