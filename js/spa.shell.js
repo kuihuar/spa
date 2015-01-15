@@ -1,5 +1,5 @@
-/*
-* spa.shell.js
+*
+* spa.shell.js/
 * Shell module for spa
 */
 
@@ -12,6 +12,7 @@
 /* global $, spa */
 spa.shell = (function(){
 	//-----------------------BEGIN MODULE SCOPE VARIABLES--------------------------
+	'use strict';
 	var configMap = {
 		anchor_schema_map: {
 			chat: { opened: true, closed: true}
@@ -19,7 +20,10 @@ spa.shell = (function(){
 		resize_interval: 200,
 		main_html: String() 
 		+ '<div class="spa-shell-head">'
-		+ '<div class="spa-shell-head-logo"></div>'
+		+ '<div class="spa-shell-head-logo">'
+			+ '<h1>SPA</h1>'
+			+ '<p>javascript end to end</p>'
+		+ '</div>'
 		+	'<div class="spa-shell-head-acct"></div>'
 		+	'<div class="spa-shell-head-search"></div>'
 		+ '</div>'
@@ -39,6 +43,7 @@ spa.shell = (function(){
 	jqueryMap = {},
 	copyAnchorMap, setJqueryMap, //toggleChat, 
 	changeAnchorPart, onHashchange, onResize,
+	onTapAcct, onLogin, onLogout,
 	setChatAnchor, initModule;
 	//--------------------END MODULE SCOPE VARIABLES--------------------------
 	//--------------------BEGIN UTILITY METHODS-------------------------------
@@ -52,7 +57,9 @@ spa.shell = (function(){
 	setJqueryMap = function(){
 		var $container = stateMap.$container;
 		jqueryMap = {
-			$container: $container
+			$container: $container,
+			$acct: $container.find('.spa-shell-head-acct'),
+			$nav: $container.find('.spa-shell-main-nav')
 			//$chat: $container.find('.spa-shell-chat')
 		};
 	};
@@ -252,14 +259,35 @@ spa.shell = (function(){
 			return true;
 		}
 		spa.chat.handleResize();
-		stateMap.resize.idto = setTimeout(
+		stateMap.resize_idto = setTimeout(
 			function(){ stateMap.resize_idto = undefined; },
 			configMap.resize_interval
 		);
 		return true;
 	};
-
 	//End Event handler /onResize/
+	// Begin Event Handler / onTapAcct/
+	onTapAcct = function(event){
+		var acct_text, user_name, user = spa.model.people.get_user();
+		if(user.get_is_anon()){
+			user_name = prompt('Please sign-in');
+			spa.model.people.login(user_name);
+			jqueryMap.$acct.text('...processing...');
+		}
+		else{
+			spa.model.people.logout();
+		}
+		return false;
+
+	};
+	// End Event Handler / onTapAcct/
+	onLogin = function(event, login_user){
+		jqueryMap.$acct.text(login_user.name);
+	};
+	onLogout = function(event, logout_user){
+		jqueryMap.$acct.text('Please sing-in');
+	};
+	
 	//---------------------END EVENT HANDLERS----------------------------------
 
 	//---------------------BEGIN PUBLIC METHODS--------------------------------
@@ -302,11 +330,6 @@ spa.shell = (function(){
 		stateMap.$container = $container;
 		$container.html(configMap.main_html);
 		setJqueryMap();
-		// initialize chat slider and bind click handler
-/*		stateMap.is_chat_retracted = true;    移除了，
-		jqueryMap.$chat
-		.attr('title', configMap.chat_retract_title)
-		.click(onClickChat);*/
 		// configure uriAnchor to use our schema
 		$.uriAnchor.configModule({
 			schema_map: configMap.anchor_schema_map
@@ -330,6 +353,12 @@ spa.shell = (function(){
 		.bind('resize', onResize)
 		.bind('hashchange', onHashchange)
 		.trigger('hashchange');
+
+		$.gevent.subscribe($container, 'spa-login', onLogin);
+		$.gevent.subscribe($container, 'spa-logout', onLogout);
+		jqueryMap.$acct
+		.text('Please sign-in')
+		.bind('utap', onTapAcct);
 	};
 	// End Public method /initModule/
 	return {
