@@ -1,4 +1,4 @@
-*
+/*
 * spa.shell.js/
 * Shell module for spa
 */
