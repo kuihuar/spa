@@ -13,7 +13,7 @@
 /*global $, spa */
 spa.fake = (function(){ 
 	'use strict';
-	var peopleList, getPeopleList, fakeIdSerial, makeFakeId, mockSio;
+	var peopleList, fakeIdSerial, makeFakeId, mockSio;
 	fakeIdSerial = 5;
 	makeFakeId = function(){
 		return 'id_' + String(fakeIdSerial++);
@@ -56,7 +56,7 @@ spa.fake = (function(){
 		emit_sio = function(msg_type, data){
 			//repond to 'adduser' event with 'userupdate'
 			//callback after a 3s delay
-			var person_map;
+			var person_map, i;
 			if(msg_type === 'adduser' && callback_map.userupdate){
 				setTimeout(function(){
 					person_map = {
@@ -92,6 +92,18 @@ spa.fake = (function(){
 				}
 				send_listchange();
 			}
+			// simulate send of 'updateavatar' message and data to server
+			if(msg_type === 'updateavatar' && callback_map.listchange){
+				// simulate recipt of 'listchange' message
+				for(i = 0; i < peopleList.length; i++){
+					if(peopleList[i]._id === data.person_id){
+						peopleList[i].css_map = data.css_map;
+						break;
+					}
+				}
+				//execute callback for the 'listchange' message
+				callback_map.listchange([peopleList]);
+			}
 		};
 
 		emit_mock_msg = function(){
@@ -101,7 +113,7 @@ spa.fake = (function(){
 					callback_map.updatechat([{
 						dest_id: user.id,
 						dest_name: user.name,
-						sender_id: id_04,
+						sender_id: 'id_04',
 						msg_text: 'His there, '+ user.name +'! Wilma here'
 					}]);
 				}
@@ -114,6 +126,7 @@ spa.fake = (function(){
 			listchange_idto = setTimeout(function(){
 				if(callback_map.listchange){
 					callback_map.listchange([peopleList]);
+					emit_mock_msg();
 					listchange_idto = undefined;
 				}
 				else{

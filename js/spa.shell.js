@@ -25,7 +25,7 @@ spa.shell = (function(){
 			+ '<p>javascript end to end</p>'
 		+ '</div>'
 		+	'<div class="spa-shell-head-acct"></div>'
-		+	'<div class="spa-shell-head-search"></div>'
+//		+	'<div class="spa-shell-head-search"></div>'
 		+ '</div>'
 		+ '<div class="spa-shell-main">'
 		+	'<div class="spa-shell-main-nav"></div>'
@@ -285,7 +285,7 @@ spa.shell = (function(){
 		jqueryMap.$acct.text(login_user.name);
 	};
 	onLogout = function(event, logout_user){
-		jqueryMap.$acct.text('Please sing-in');
+		jqueryMap.$acct.text('Please sign-in');
 	};
 	
 	//---------------------END EVENT HANDLERS----------------------------------

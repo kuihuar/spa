@@ -91,7 +91,7 @@ spa.model = (function(){
 		stateMap.user.id = user_map._id;
 		stateMap.user.css_map = user_map.css_map;
 		stateMap.people_cid_map[user_map._id] = stateMap.user;
-		chat.login();
+		chat.join();
 		// when we add chat, we should join here
 		$.gevent.publish('spa-login', [stateMap.user]);
 	};
@@ -162,17 +162,13 @@ spa.model = (function(){
 		};
 
 		logout = function(){
-			var is_removed, user = stateMap.user;
-			// when we add chat, we should leave the chatroom here
-
-			is_removed = removePerson(user);
-			stateMap.user = stateMap.anon_user;
-
+			var user = statemap.user;
 			chat._leave();
-			$.gevent.publish('spa-logout', [user]);
-			return is_removed;
-		};
+			stateMap.user = stateMap.anon_user;
+			clearPeopleDb();
 
+			$.gevent.publish('spa-logout', [user]);
+		};
 		return{
 			get_by_cid: get_by_cid,
 			get_db: get_db,
@@ -232,13 +228,14 @@ spa.model = (function(){
     	var
     	_publish_listchange,_publish_updatechat,
     	_update_list, _leave_chat, 
-    	get_chatee, join_chat,send_msg, set_chatee,
+    	get_chatee, join_chat,send_msg, 
+    	set_chatee, update_avatar,
     	chatee = null;
 
     	// Begin internal methods
     	_update_list = function(arg_list){
-    		var i, person_map, make_person_map,
-    		people_list = arg_list[0];
+    		var i, person_map, make_person_map, person,
+    		people_list = arg_list[0],
     		is_chatee_online = false;
     		clearPeopleDb();
 
@@ -259,10 +256,13 @@ spa.model = (function(){
     				id: person_map._id,
     				name: person_map.name
     			};
+    			person = makePerson(make_person_map);
+
     			if(chatee && chatee.id === make_person_map.id){
     				is_chatee_online = true;
+    				chatee = person;
     			}
-    			makePerson(make_person_map);
+    			
     		}
     		stateMap.people_db.sort('name');
     		// If chatee is no longer online, we unset the chatee
@@ -271,7 +271,7 @@ spa.model = (function(){
     	};
     	_publish_listchange = function(arg_list){
     		_update_list(arg_list);
-    		$.genent.publish('spa-listchange', [arg_list]);
+    		$.gevent.publish('spa-listchange', [arg_list]);
     	};
     	// End internal methods
     	_publish_updatechat = function(arg_list){
@@ -316,7 +316,8 @@ spa.model = (function(){
     			msg_text:msg_text
     		};
     		// we published updatechat so we can show our outgoing messages
-    		sio.emit('updatechat',[msg_map]);
+    		_publish_updatechat([msg_map]);
+    		sio.emit('updatechat',msg_map);
     		return true;
     	};
     	set_chatee = function(person_id){
@@ -343,6 +344,7 @@ spa.model = (function(){
     		join: join_chat,
     		send_msg: send_msg,
     		set_chatee: set_chatee
+    		//update_avatar: update_avatar
     	};
 
     }());
