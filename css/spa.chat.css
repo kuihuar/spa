@@ -70,7 +70,7 @@
 	width:10em;
 }
 .spa-chat-msg{
-	position: :absolute;
+	position:absolute;
 	top:0;
 	left:10em;
 	bottom:0;
@@ -86,9 +86,9 @@
 	left:0em;
 	right:1em;
 	bottom:4em;
-	pading:0.5em;
+	padding:0.5em;
 	border:thin solid #888;
-	overflow:scroll;
+	overflow-y:scroll;
 }
 .spa-chat-msg-log-msg{
 	background-color:#eee;

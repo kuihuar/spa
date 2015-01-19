@@ -162,7 +162,7 @@ spa.model = (function(){
 		};
 
 		logout = function(){
-			var user = statemap.user;
+			var user = stateMap.user;
 			chat._leave();
 			stateMap.user = stateMap.anon_user;
 			clearPeopleDb();
@@ -298,7 +298,7 @@ spa.model = (function(){
     			console.warn('User must be defined before joining chat');
     			return false;
     		}
-    		sio = isFakeData ? spa.fake.mockSio : spa.data.getSio;
+    		sio = isFakeData ? spa.fake.mockSio : spa.data.getSio();
     		sio.on('listchange', _publish_listchange);
     		sio.on('updatechat', _publish_updatechat);
     		stateMap.is_connected = true;
@@ -343,14 +343,13 @@ spa.model = (function(){
     		get_chatee: get_chatee,
     		join: join_chat,
     		send_msg: send_msg,
-    		set_chatee: set_chatee
-    		//update_avatar: update_avatar
+    		set_chatee: set_chatee,
+    		update_avatar: update_avatar
     	};
 
     }());
     
 	initModule = function(){
-		//var i, people_list, person_map;
 		//initialize anonymous person
 		stateMap.anon_user = makePerson({
 			cid: configMap.anon_id,
@@ -358,19 +357,6 @@ spa.model = (function(){
 			name: 'anonymous'
 		});
 		stateMap.user = stateMap.anon_user;
-
-/*		if(isFakeData){
-			people_list = spa.fake.getPeopleList();
-			for(i = 0; i < people_list.length; i++){
-				person_map = people_list[i];
-				makePerson({
-					cid: person_map._id,
-					css_map: person_map.css_map,
-					id: person_map._id,
-					name: person_map.name
-				});
-			}
-		}*/
 	};
 	return {
 		initModule: initModule,
