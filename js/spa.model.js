@@ -338,6 +338,17 @@ spa.model = (function(){
     		chatee = new_chatee;
     		return true;
     	};
+    	// avatar_update_map should have thr form:
+    	//{person_id:<string>, css_map:{
+    	//	top:<int>, left:<int>,
+    	//	'background-color':<string>
+    	//}}
+    	update_avatar = function(avatar_update_map){
+    		var sio = isFakeData ? spa.fake.mockSio : spa.data.getSio();
+    		if(sio){
+    			sio.emit('updateavatar', avatar_update_map);
+    		}
+    	};
     	return {
     		_leave: _leave_chat,
     		get_chatee: get_chatee,
