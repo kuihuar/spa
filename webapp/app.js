@@ -1,5 +1,5 @@
 /*
- * app.js - hello world
+ * app.js - Simple connect server
 */
 
 /*jslint         node    : true, continue : true,
@@ -10,14 +10,57 @@
 */
 /*global */
 
-var http, server;
-http = require('http');
-server = http.createServer(function(request, response){
-	response.writeHead(200, {'Content-Type' : 'text/plain'});
-	var response_text = request.url === '/test'
-	? 'you have hit the test page'
-	: 'Hello world';
-	response.end(response_text);
-}).listen(3000);
-
+/*var 
+connectHello, server
+http = require('http'),
+connect = require('connect'),
+app = connect(),
+bodyText = 'Hello Connect!';
+connectHello = function(request, response, next){
+	response.setHeader('content-length', bodyText.length);
+	response.end(bodyText);
+}
+app
+.use(connect.logger())
+.use(connectHello);
+server = http.createServer(app);
+server.listen(3000);
 console.log('listening on port %d', server.address().port);
+*/
+
+//----------BEGIN MODULE SCOPE VARIABLES----------
+'use strict';
+var http = require('http'),
+express = require('express'),
+app = express(),
+server = http.createServer(app);
+//-----------END MOCULE SCOPE VARIABLES-----------
+
+//----------BEGIN SERVER CONFIGRAGION------------
+app.configure(function(){
+	app.use(express.logger());
+	app.use(express.bodyParser());
+	app.use(express.methodOverride());
+});
+app.configure('development', function(){
+	app.use(express.logger());
+	app.use( express.errorHandler({
+		dumpExceptions: true,
+		showStack: true
+	}) );
+});
+app.configure('production', function(){
+	app.use(express.errorHandler());
+});
+app.get('/', function(request, response){
+	response.send('Hello Express');
+});
+//--------------END SERVER CONFIGRAGION-----------
+
+//-------------BEGIN START SERVER-------------------
+server.listen(3000);
+console.log(
+	'Express server listening on port %d in %s mode',
+	server.address().port, app.settings.env
+);
+//---------------END START SERVER-------------------
