@@ -17,7 +17,7 @@ spa.data = (function(){
 	stateMap = {sio: null},
 	makeSio, getSio, initModule;
 
-	makesio = function(){
+	makeSio = function(){
 		var socket = io.connect('/chat');
 
 		return {
@@ -28,19 +28,19 @@ spa.data = (function(){
 				socket.on(event_name, function(){
 					callback(arguments);
 				});
-			};
+			}
 		};
 	};
 
 	getSio = function(){
-		if(!stateMap.sio){ stateMap.sio = makesio(); }
+		if(!stateMap.sio){ stateMap.sio = makeSio(); }
 		return stateMap.sio;
 	};
 
 	initModule = function(){};
 
 	return{
-		getSio: getSio,
+		/*getSio: getSio,*/
 		initModule: initModule
 	};
 }());

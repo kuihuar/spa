@@ -32,15 +32,17 @@ console.log('listening on port %d', server.address().port);
 'use strict';
 var http = require('http'),
 express = require('express'),
+routes = require('./lib/routes'),
 app = express(),
 server = http.createServer(app);
-//-----------END MOCULE SCOPE VARIABLES-----------
-
 //----------BEGIN SERVER CONFIGRAGION------------
 app.configure(function(){
-	app.use(express.logger());
+	//app.use(express.logger());
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
+	//app.use(express.basicAuth('user', 'spa'));
+	app.use(express.static(__dirname + '/public' ));
+	app.use(app.router);
 });
 app.configure('development', function(){
 	app.use(express.logger());
@@ -52,15 +54,13 @@ app.configure('development', function(){
 app.configure('production', function(){
 	app.use(express.errorHandler());
 });
-app.get('/', function(request, response){
-	response.send('Hello Express');
-});
+routes.configRoutes(app, server);
 //--------------END SERVER CONFIGRAGION-----------
 
 //-------------BEGIN START SERVER-------------------
 server.listen(3000);
-console.log(
+/*console.log(
 	'Express server listening on port %d in %s mode',
 	server.address().port, app.settings.env
-);
+);*/
 //---------------END START SERVER-------------------
