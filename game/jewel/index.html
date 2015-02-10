@@ -2,22 +2,51 @@
 <html>
 <head>
 	<meta charset="UTF-8"/>
-	<link rel="stylesheet" media="" href="main.css" />
+	<meta name="viewport" content="width=device-width, user-scaleable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<link rel="stylesheet" media="" href="styles/main.css" />
+	<link rel="stylesheet" href="styles/fontfaces.css" />
+	<link res="stylesheet" media="print and resolution > 150dpi" href="styles/print150.css" />
+	<link rel="stylesheet" href="styles/mobile.css" 
+		media="screen and(max-device-width:768px) and(orientation:portrait), 
+			   screen and(max-device-width:1024px) and(orientation: landscape)" />
 	<title>Jewel Warrior</title>
 	<script type="text/javascript" src="scripts/modernizr.js"></script>
 	<script type="text/javascript" src="scripts/loader.js"></script>
+	<script type="text/javascript">
+	Modernizr.load([
+		{
+			comlete:function(){
+				alert("Success!");
+			}
+		}
+	]);
+	</script>
 </head>
 <body>
 	<div id="game">
-		<div class="screen" id="splash-screen"></div>
-		<div class="screen" id="main-menu"></div>
+		<div class="screen" id="splash-screen">
+			<h1 class="logo">Jewel<br/>Warrior</h1>
+			<span>Click to continue</span>
+		</div>
+		<div class="screen" id="install-screen">
+			<h1 class="logo">Jewel <br/>Warrior</h1>
+			<span>
+				Click the <img="images/install-icon.png" alt="Install icon" />
+				button to install the game to your home screen.
+			</span>
+		</div>
+		<div class="screen" id="main-menu">
+			<h2 class="logo">Jewel <br/>Warrior</h2>
+			<ul class="menu">
+				<li><button name="game-screen">Play</button></li>
+				<li><button name="hiscore">Highscore</button></li>
+				<li><button name="about">About</button></li>
+				<li><button name="exit-screen">Exit</button></li>
+			</ul>
+		</div>
 		<div class="screen" id="game-screen"></div>
 		<div class="screen" id="high-scores"></div>
 	</div>
 </body>
-	<footer><nav><ul>
-		<li><a>版权信息</a></li>
-		<li><a>关于我们</a></li>
-		<li><a>联系我们</a></li>
-	</ul></nav></footer>
 </html>
